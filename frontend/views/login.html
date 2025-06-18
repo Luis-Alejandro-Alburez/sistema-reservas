@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión - Sistema de Reservas</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .error-message {
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 0.25rem;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="../index.html">Sistema de Reservas</a>
+        <div class="navbar-nav">
+          <a class="nav-link active" href="#">Iniciar Sesión</a>
+          <a class="nav-link" href="register.html">Registrarse</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+          <div class="card shadow">
+            <div class="card-body">
+              <h3 class="card-title text-center mb-4">Iniciar Sesión</h3>
+
+              <!-- Mensaje de error general -->
+              <div id="errorAlert" class="alert alert-danger d-none"></div>
+
+              <form id="loginForm">
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    required
+                    placeholder="ejemplo@correo.com"
+                  />
+                  <div class="error-message" id="emailError"></div>
+                </div>
+                <div class="mb-3">
+                  <label for="password" class="form-label">Contraseña</label>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    required
+                    placeholder="••••••••"
+                  />
+                  <div class="error-message" id="passwordError"></div>
+                </div>
+                <div class="d-grid gap-2">
+                  <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="loginButton"
+                  >
+                    <span id="loginText">Iniciar Sesión</span>
+                    <span
+                      id="loginSpinner"
+                      class="spinner-border spinner-border-sm d-none"
+                    ></span>
+                  </button>
+                </div>
+              </form>
+              <div class="text-center mt-3">
+                <a href="../index.html" class="btn btn-link">Home</a>
+                <div class="mt-2">
+                  <a href="forgot-password.html">¿Olvidaste tu contraseña?</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const loginForm = document.getElementById("loginForm");
+        const errorAlert = document.getElementById("errorAlert");
+        const loginButton = document.getElementById("loginButton");
+        const loginText = document.getElementById("loginText");
+        const loginSpinner = document.getElementById("loginSpinner");
+
+        loginForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          // Resetear errores
+          errorAlert.classList.add("d-none");
+          document
+            .querySelectorAll(".error-message")
+            .forEach((el) => (el.textContent = ""));
+
+          // Mostrar spinner de carga
+          loginText.textContent = "Cargando...";
+          loginSpinner.classList.remove("d-none");
+          loginButton.disabled = true;
+
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          const authManager = new AuthManager();
+          try {
+            await authManager.login(email, password);
+
+            // Redirigir según rol (ejemplo)
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (user.rol === "Administrador") {
+              window.location.href = "admin/dashboard.html";
+            } else {
+              window.location.href = "reservas.html";
+            }
+          } catch (error) {
+            // Mostrar errores
+            errorAlert.textContent = error.message;
+            errorAlert.classList.remove("d-none");
+
+            // Resaltar campos con error
+            if (error.message.includes("Credenciales")) {
+              document.getElementById("emailError").textContent =
+                "Verifica tus credenciales";
+              document.getElementById("passwordError").textContent =
+                "Verifica tus credenciales";
+            }
+          } finally {
+            // Restaurar botón
+            loginText.textContent = "Iniciar Sesión";
+            loginSpinner.classList.add("d-none");
+            loginButton.disabled = false;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

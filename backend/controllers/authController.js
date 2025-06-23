@@ -17,16 +17,24 @@ exports.login = async (req, res) => {
     }
 
     const isMatch = await bcrypt.compare(password, usuario.Contraseña);
+
     if (!isMatch) {
       return res.status(401).json({ error: "Credenciales inválidas" });
     }
-
+    console.log("Antes del JWT");
+    console.log(process.env.JWT_SECRET);
     const token = jwt.sign(
-      { id: usuario.ID_Usuario, rol: usuario.Rol.Nombre },
+      {
+        id: usuario.id,
+        nombre: usuario.nombre,
+      },
       process.env.JWT_SECRET,
-      { expiresIn: "8h" }
+      {
+        expiresIn: "1h",
+      }
     );
-
+    console.log("Despues del JWT");
+    console.log(token);
     res.json({
       token,
       user: {
@@ -38,6 +46,7 @@ exports.login = async (req, res) => {
       },
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -68,7 +77,7 @@ exports.register = async (req, res) => {
       Teléfono: telefono,
       ID_Rol: 2, // Asumiendo que 2 es el ID para usuarios comunes
     });
-
+    console.log(usuario.body);
     res.status(201).json({ message: "Usuario registrado exitosamente" });
   } catch (error) {
     res.status(500).json({ error: error.message });

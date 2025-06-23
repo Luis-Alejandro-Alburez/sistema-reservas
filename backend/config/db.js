@@ -1,8 +1,7 @@
 const { Sequelize } = require("sequelize");
-require("dotenv").config();
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME || "sistema_reservas",
+  process.env.DB_NAME,
   process.env.DB_USER || "root",
   process.env.DB_PASSWORD || "12220920Chizu!",
   {

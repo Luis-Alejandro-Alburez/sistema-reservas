@@ -1,4 +1,5 @@
 const express = require("express");
+require("dotenv").config();
 const cors = require("cors");
 const { sequelize } = require("./models"); // Cambia esta línea
 const authRoutes = require("./routes/authRoutes");
@@ -10,16 +11,16 @@ const app = express();
 console.log("estoy en express");
 
 // Middleware
-app.use(
-  cors()
-  //origin: ["http://localhost:5500", "http://127.0.0.1:5500"], // O la URL exacta de tu frontend
-  //origin: "*",
-  //methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  //allowedHeaders: ["Content-Type", "Authorization"],
-  //credentials: true, // Si usas cookies/tokens de autenticación
-);
+app.use(cors());
 
 app.use(express.json());
+
+app.use(
+  cors({
+    origin: ["http://localhost:5500", "http://127.0.0.1:5500"], // puerto donde corre tu frontend
+    credentials: true, // si usas cookies o headers personalizados
+  })
+);
 
 // Rutas
 app.use("/api/auth", authRoutes);

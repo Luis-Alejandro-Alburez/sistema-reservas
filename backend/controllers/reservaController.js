@@ -95,7 +95,6 @@ exports.cancelarReserva = async (req, res) => {
   }
 };
 
-// Añade este método si no existe
 exports.obtenerReservasPorEspacio = async (req, res) => {
   try {
     const reservas = await Reserva.findAll({
